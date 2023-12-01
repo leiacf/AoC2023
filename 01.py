@@ -47,17 +47,25 @@ def replace(line, where):
                 "eight": "8", 
                 "nine": "9", 
                }
+    
+    index = 0
+    new = ""
 
-    original = line
+    for number, loc in where.items():
+        
+        if loc-index > 0:
+            new += line[index:loc]
 
-    replace = next(iter(where))
-    index = where[replace]
+        elif index > loc:
+            index = loc
+        
+        new += numbers[number]
 
-    line = original[:index]
-    line += numbers[replace]
-    line += original[index+len(replace):]
+        index = loc+len(number)
 
-    return line
+    new += line[index:]
+
+    return new
 
 def part1(input):
 
@@ -81,17 +89,18 @@ def part1(input):
 
 def part2(input):
 
-    #input = test()
+    input = test()
     new = []
 
     for line in input:
 
+        print(line)
+
         numbers = findNumbers(line)
         line = replace(line, numbers)
 
-        numbers = findNumbers(line)
-        numbers = dict(sorted(numbers.items(), key = lambda item: item[1], reverse = True))
-        line = replace(line, numbers)
+        print(line)
+        print()
 
         new.append(line)
 
