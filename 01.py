@@ -20,14 +20,25 @@ def test():
 def findNumbers(line):
 
     where = {}
-
+    
     numbers = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
     
     for number in numbers:
-        if number in line:
-            where[number] = line.find(number)
+        temp = []
 
-    where = dict(sorted(where.items(), key=lambda item: item[1]))
+        if number in line:
+            first = line.find(number)
+            last = line.rfind(number)    
+            
+            if first == last:
+                temp.append(first)
+
+            else:
+                temp.append(first)
+                temp.append(last)
+                        
+        if len(temp) > 0:
+            where[number] = temp
 
     return where
 
@@ -48,24 +59,12 @@ def replace(line, where):
                 "nine": "9", 
                }
     
-    index = 0
-    new = ""
-
     for number, loc in where.items():
-        
-        if loc-index > 0:
-            new += line[index:loc]
 
-        elif index > loc:
-            index = loc
-        
-        new += numbers[number]
+        for i in loc:
+            line = line[:i] + numbers[number] + line[i+1:]
 
-        index = loc+len(number)
-
-    new += line[index:]
-
-    return new
+    return line
 
 def part1(input):
 
@@ -89,18 +88,13 @@ def part1(input):
 
 def part2(input):
 
-    input = test()
+    #input = test()
     new = []
 
     for line in input:
 
-        print(line)
-
         numbers = findNumbers(line)
         line = replace(line, numbers)
-
-        print(line)
-        print()
 
         new.append(line)
 
