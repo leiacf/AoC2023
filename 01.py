@@ -5,7 +5,7 @@ import time
 
 def test():
 
-    input = {
+    input = [
         "two1nine",
         "eightwothree",
         "abcone2threexyz",
@@ -13,9 +13,31 @@ def test():
         "4nineeightseven2",
         "zoneight234",
         "7pqrstsixteen",
-    }
+    ]
 
     return input
+
+def calculate(input):
+
+    digits = []
+
+    for line in input:
+
+        temp = []
+
+        for letter in line:
+            if letter.isdigit():
+                temp.append(letter)
+
+        digits.append(temp)
+
+    sum = 0
+
+    for row in digits:
+        num = row[0] + row[-1]
+        sum += int(num)
+
+    return sum
 
 def findNumbers(line):
 
@@ -30,11 +52,9 @@ def findNumbers(line):
             first = line.find(number)
             last = line.rfind(number)    
             
-            if first == last:
-                temp.append(first)
+            temp.append(first)
 
-            else:
-                temp.append(first)
+            if first != last:
                 temp.append(last)
                         
         if len(temp) > 0:
@@ -59,61 +79,29 @@ def replace(line, where):
                 "nine": "9", 
                }
     
-    for number, loc in where.items():
+    for number, indexes in where.items():
 
-        for i in loc:
-            line = line[:i] + numbers[number] + line[i+1:]
+        for index in indexes:
+            line = line[:index] + numbers[number] + line[index+1:]
 
     return line
 
 def part1(input):
 
-    digits = []
-
-    for line in input:
-        temp = []
-        for letter in line:
-            if  letter.isdigit():
-                temp.append(letter)
-
-        digits.append(temp)
-
-    sum = 0
-
-    for row in digits:
-        num = row[0] + row[-1]
-        sum += int(num)
-
+    sum = calculate(input)
     print("Part 1: {}".format(sum))
 
 def part2(input):
 
     #input = test()
-    new = []
+    parsed = []
 
     for line in input:
 
         numbers = findNumbers(line)
-        line = replace(line, numbers)
+        parsed.append(replace(line, numbers))
 
-        new.append(line)
-
-    digits = []
-
-    for line in new:
-        temp = []
-
-        for letter in line:
-            if letter.isdigit():
-                temp.append(letter)
-
-        digits.append(temp)
-
-    sum = 0
-
-    for row in digits:
-        num = row[0] + row[-1]
-        sum += int(num)
+    sum = calculate(parsed)
 
     print("Part 2: {}".format(sum))    
 
