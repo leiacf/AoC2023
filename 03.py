@@ -4,9 +4,10 @@ from tools import files
 import time
 
 def test():
-    input = [
 
-        "467..114..",
+    input = [
+        "467......1",
+        "467..114.#",
         "...*......",
         "..35..633.",
         "......#...",
@@ -61,8 +62,10 @@ def digits(input):
     numbers = []
 
     for y in range(len(input)):
+
         line = input[y]
-        for x in range(len(input[0])):
+        
+        for x in range(len(line)):
 
             if line[x].isdigit():
 
@@ -82,6 +85,15 @@ def digits(input):
                         counter += 1
 
                 end = counter
+
+                if (start < 0):
+                    start = 0
+
+                if end >= len(line):
+                    end = len(line)-1
+
+                if end < start:
+                    end = start
 
                 if (start == end):
                     num = int(line[start])
@@ -107,9 +119,6 @@ def check(poi, numbers):
     valid = []
 
     for number, y, start, end in numbers:
-
-        if end < start:
-            end = start
 
         for symbol, startY, endY, startX, endX in poi:
 
