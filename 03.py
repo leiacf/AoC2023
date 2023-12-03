@@ -5,6 +5,7 @@ import time
 
 def test():
     input = [
+
         "467..114..",
         "...*......",
         "..35..633.",
@@ -14,87 +15,63 @@ def test():
         "..592.....",
         "......755.",
         "...$.*....",
-        ".664.598.."
-    ]
+        ".664.598.#",
+        ]
 
     return input
 
-def parse(input):
+def symbols(input):
+    poi = []
+    
+    for y in range(len(input)):
+        for x in range(len(input[0])):
+            test = input[y][x]
+
+            if test != "." and test != "\n" and not test.isdigit():
+                
+                if y > 0:
+                    startY = y-1
+                else:
+                    startY = y
+
+                if x > 0:
+                    startX = x-1
+                else:
+                    startX = x
+
+                if y < len(input)-1:
+                    endY = y+1
+                else:
+                    endY = y
+
+                if x < len(input[0])-1:
+                    endX = x+1
+                else:
+                    endX = x
+            
+                poi.append([test, startY, endY, startX, endX])
+
+    return poi
+
+def digits(input):
 
     numbers = []
 
-    for _ in range(len(input)):
-        numbers.append([False for x in range(len(input[0]))])
-
     for y in range(len(input)):
+        line = input[y]
         for x in range(len(input[0])):
 
-            if input[y][x].isdigit():
+            if line[x].isdigit():
 
-                if x > 0:
-                    if input[y][x-1] != "." and not input[y][x-1].isdigit():
-                            numbers[y][x] = True
-
-                    if y < len(input)-1:
-                        if input[y+1][x-1] != "." and not input[y+1][x-1].isdigit():
-                            numbers[y][x] = True
-
-                    if y > 0:
-
-                        if input[y-1][x-1] != "." and not input[y-1][x-1].isdigit():
-                            numbers[y][x] = True
-
-                if y > 0:
-                     
-                    if input[y-1][x] != "." and not input[y-1][x].isdigit():
-                            numbers[y][x] = True
-
-                    if y < len(input)-1:
-                        if input[y+1][x] != "." and not input[y+1][x].isdigit():
-                            numbers[y][x] = True
-
-                if x < len(input[0])-1:
-
-                    if input[y][x+1] != "." and not input[y][x+1].isdigit():
-                            numbers[y][x] = True                 
-                                                
-                    if y < len(input)-1:
-                        if input[y-1][x+1] != "." and not input[y-1][x+1].isdigit():
-                            numbers[y][x] = True
-
-                        if input[y+1][x+1] != "." and not input[y+1][x+1].isdigit():
-                            numbers[y][x] = True
-
-    return numbers
-
-def show(numbers):
-     
-    for y in range(len(numbers)):
-        for x in range(len(input[0])):
-             print(numbers[y][x], end="")
-             print(" ", end="")
-        print()
-
-def find(numbers, input):
-
-    sum = 0
-    last = ""
-    where = 0
-     
-    for y in range(len(numbers)):
-
-        for x in range(len(numbers[0])):
-
-            if numbers[y][x] == True:
-                line = input[y]
+                num = 0
                 counter = x
 
-                if counter > 0:
+                if counter >= 0:
                     while line[counter].isdigit():
                         counter -= 1
 
-                start = counter
                 counter += 1
+                start = counter
 
                 if counter < (len(line)-1):
 
@@ -103,29 +80,70 @@ def find(numbers, input):
 
                 end = counter
 
-                if end == len(line):
-                    num = int(line[start+1:])
-                else:
-                    num = int(line[start+1:end])
-                
-                if num != last:
-                    sum += num
+                if (start == end):
+                    num = int(line[start])
 
-                elif (num == last):
-                    if x > where+1:
-                        sum += num
-                
-                last = num
-                where = x
+                elif (end == len(line)):
+                    num = int(line[start:])
+
+                else:
+                    num = int(line[start:end])
+
+                temp = [num, y, start, end]
+
+                if temp not in numbers:
+                    numbers.append(temp)
+
+    return numbers
+
+def check(poi, numbers):
+
+    valid = []
+
+    for number, y, start, end in numbers:
+
+        for symbol, startY, endY, startX, endX in poi:
+
+            if y in range(startY, endY+1):
+                found = False
+
+                if (start == end):
+                    if start in range(startX, endX+1):
+                        valid.append(number)
+                        found = True
+                        break
+
+                for z in range(start, end):
+
+                    if z in range(startX, endX+1):
+
+                        valid.append(number)
+                        found = True
+                        break
+                    
+                if found:
+                    break
+
+    return valid
+
+def parse(input):
+
+    poi = symbols(input)
+    numbers = digits(input)
+
+    valid = check(poi, numbers)
+
+    sum = 0
+
+    for number in valid:
+        sum += number
 
     return sum
 
 def part1(input):
 
-    #input = test()
-    numbers = parse(input)
-
-    sum = find(numbers, input)
+    input = test()
+    sum = parse(input)
 
     print("Part 1: {}".format(sum))
 
