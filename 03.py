@@ -14,8 +14,8 @@ def test():
         ".....+.58.",
         "..592.....",
         "......755.",
-        "...$.*....",
-        ".664.598.#",
+        "...$.*...#",
+        ".664.598.1",
         ]
 
     return input
@@ -44,12 +44,15 @@ def symbols(input):
                 else:
                     endY = y
 
-                if x < len(input[0])-1:
+                if x < len(input[y])-1:
                     endX = x+1
                 else:
                     endX = x
             
                 poi.append([test, startY, endY, startX, endX])
+
+    #for line in poi:
+    #    print(line)
 
     return poi
 
@@ -89,10 +92,13 @@ def digits(input):
                 else:
                     num = int(line[start:end])
 
-                temp = [num, y, start, end]
+                temp = [num, y, start, end-1]
 
                 if temp not in numbers:
                     numbers.append(temp)
+
+    #for line in numbers:
+    #    print(line)
 
     return numbers
 
@@ -102,18 +108,15 @@ def check(poi, numbers):
 
     for number, y, start, end in numbers:
 
+        if end < start:
+            end = start
+
         for symbol, startY, endY, startX, endX in poi:
 
             if y in range(startY, endY+1):
                 found = False
 
-                if (start == end):
-                    if start in range(startX, endX+1):
-                        valid.append(number)
-                        found = True
-                        break
-
-                for z in range(start, end):
+                for z in range(start, end+1):
 
                     if z in range(startX, endX+1):
 
@@ -142,7 +145,7 @@ def parse(input):
 
 def part1(input):
 
-    input = test()
+    #input = test()
     sum = parse(input)
 
     print("Part 1: {}".format(sum))
