@@ -89,6 +89,8 @@ def digits(input):
 
                 if temp not in numbers:
                     numbers.append(temp)
+            
+                letter = end+1
 
     #for line in numbers:
     #    print(line)
