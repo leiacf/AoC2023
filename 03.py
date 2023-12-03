@@ -6,8 +6,7 @@ import time
 def test():
 
     input = [
-        "467......1",
-        "467..114.#",
+        "467..114..",
         "...*......",
         "..35..633.",
         "......#...",
@@ -15,8 +14,8 @@ def test():
         ".....+.58.",
         "..592.....",
         "......755.",
-        "...$.*...#",
-        ".664.598.1",
+        "...$.*....",
+        ".664.598..",
         ]
 
     return input
@@ -65,46 +64,28 @@ def digits(input):
 
         line = input[y]
         
-        for x in range(len(line)):
+        for letter in range(len(line)):
 
-            if line[x].isdigit():
+            if line[letter].isdigit():
+                
+                start = letter
 
-                num = 0
-                counter = x
+                if letter > 0:
+                    while start > -1 and line[start].isdigit():
+                        start -= 1
+                    start += 1
 
-                if counter >= 0:
-                    while line[counter].isdigit():
-                        counter -= 1
+                end = letter
 
-                counter += 1
-                start = counter
+                if end < len(line):
 
-                if counter < (len(line)-1):
+                    while end < len(line) and line[end].isdigit():
+                        end += 1
+                    end -= 1
 
-                    while line[counter].isdigit() and counter < len(line)-1:
-                        counter += 1
+                num = int(line[start:end+1])
 
-                end = counter
-
-                if (start < 0):
-                    start = 0
-
-                if end >= len(line):
-                    end = len(line)-1
-
-                if end < start:
-                    end = start
-
-                if (start == end):
-                    num = int(line[start])
-
-                elif (end == len(line)):
-                    num = int(line[start:])
-
-                else:
-                    num = int(line[start:end])
-
-                temp = [num, y, start, end-1]
+                temp = [num, y, start, end]
 
                 if temp not in numbers:
                     numbers.append(temp)
@@ -120,21 +101,23 @@ def check(poi, numbers):
 
     for number, y, start, end in numbers:
 
-        for symbol, startY, endY, startX, endX in poi:
+        for _, startY, endY, startX, endX in poi:
 
-            if y in range(startY, endY+1):
-                found = False
+            if y not in range(startY, endY+1):
+                continue
 
-                for z in range(start, end+1):
+            found = False
 
-                    if z in range(startX, endX+1):
+            for z in range(start, end+1):
 
-                        valid.append(number)
-                        found = True
-                        break
-                    
-                if found:
+                if z in range(startX, endX+1):
+
+                    valid.append(number)
+                    found = True
                     break
+
+            if found:
+                break         
 
     return valid
 
@@ -152,6 +135,36 @@ def parse(input):
 
     return sum
 
+def gears(input):
+
+    poi = symbols(input)
+    numbers = digits(input)
+
+    sum = 0
+
+    for symbol, startY, endY, startX, endX in poi:
+
+        adjacent = []
+
+        if symbol != "*":
+            continue
+
+        for number, y, start, end in numbers:
+
+            if y not in range(startY, endY+1):
+                continue
+
+            for z in range(start, end+1):
+
+                if z in range(startX, endX+1):
+                    adjacent.append(number)
+                    break
+
+        if len(adjacent) == 2:
+            sum += (adjacent[0] * adjacent[1])
+
+    return sum
+
 def part1(input):
 
     #input = test()
@@ -161,7 +174,10 @@ def part1(input):
 
 def part2(input):
 
-    print("Part 2: {}".format(1))    
+    #input = test()
+    sum = gears(input)
+
+    print("Part 2: {}".format(sum))    
 
 filename = "input/03.txt"
 input = files.input_as_list(filename)
