@@ -6,13 +6,12 @@ import time
 def test():
 
     input = [ 
-"Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53",
-"Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19",
-"Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1",
-"Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83",
-"Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36",
-"Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"
-
+        "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53",
+        "Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19",
+        "Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1",
+        "Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83",
+        "Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36",
+        "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"
     ]
 
     return input
@@ -22,7 +21,6 @@ def parse(input):
     cards = []
 
     for line in input:
-        line = line.replace("Card ", "")
         index = line.find(":")
         line = line[index+1:]
 
@@ -42,6 +40,9 @@ def multiply(cards):
     
     copies = {}
 
+    for card in cards:
+        copies[card] = 1
+
     for x, card in enumerate(cards):
 
         winning = card[0]
@@ -56,21 +57,12 @@ def multiply(cards):
             if y in w:           
                 won += 1
 
-        if card in copies:
-            have = copies[card]+1
-        else:
-            have = 1
+        have = copies[card]
 
         for _ in range(have):        
-
             for i in range(x+1, x+won+1):
-
                 if i < len(cards):
-                
-                    if cards[i] in copies:
-                        copies[cards[i]] += 1
-                    else:
-                        copies[cards[i]] = 1
+                    copies[cards[i]] += 1
 
     return copies
 
@@ -110,13 +102,7 @@ def part2(input):
     sum = 0
 
     for card in cards:
-
-        amount = 1
-
-        if card in copies:
-            amount += copies[card]
-
-        sum += amount
+        sum += copies[card]
 
     print("Part 2: {}".format(sum))    
 
