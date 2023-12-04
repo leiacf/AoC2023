@@ -3,11 +3,21 @@
 from tools import files
 import time
 
+def test():
+
+    input = [ ]
+
+    return input
+
 def part1(input):
+
+    #input = test()
 
     print("Part 1: {}".format(1))
 
 def part2(input):
+
+    #input = test()
 
     print("Part 2: {}".format(1))    
 
