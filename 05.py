@@ -75,10 +75,10 @@ def checkRange(mapp, start, end):
 
         for destination, source, length in mapp:
 
-            if start < end <= source or source+length <= start < end:
+            if start < end < source or source+length < start < end:
                 continue
 
-            elif source <= start < end <= source+length:
+            elif source <= start <= end <= source+length:
 
                 begin   = start + (destination-source)
                 stop    = end + (destination-source)
