@@ -8,7 +8,6 @@ class Hand():
     def __init__(self, hand, bid):
         self.hand = hand
         self.bid = int(bid)
-        self.part2 = part2
         self.type = self.find_type()
 
     def __str__(self):
@@ -16,15 +15,8 @@ class Hand():
         return string
 
     def find_type(self):
-        cards = {}
 
-        for card in self.hand:
-            if card in cards:
-                cards[card] += 1
-            else:
-                cards[card] = 1
-
-        cards = dict(sorted(cards.items(), key=lambda item: item[1], reverse=True))
+        cards = self.count()
 
         for value in cards.values():
 
@@ -47,6 +39,55 @@ class Hand():
                     return "High card"                    
                 case _:
                     print("Huh, this should not happen")
+
+    def change_type(self):
+        if not "J" in self.hand:
+            return
+
+        j = 0
+
+        for letter in self.hand:
+            if letter == "J":
+                j += 1
+
+        match self.type:
+            case "Four of a kind":
+                if j == 1 or j == 4:
+                    self.type = "Five of a kind"
+            case "Full house":
+                if j == 2 or j == 3:
+                    self.type = "Five of a kind"
+            case "Three of a kind":
+                if j == 1 or j == 3:
+                    self.type = "Four of a kind"
+            case "Two pairs":
+                if j == 2:
+                    self.type = "Four of a kind"
+                if j == 1:
+                    self.type = "Full house"
+            case "One pair":
+                if j == 1 or j == 2:
+                    self.type = "Three of a kind"
+            case "High card":
+                if j == 1:
+                    self.type = "One pair"
+
+    def change_digit(self):
+        self.hand = self.hand.replace("J", "1")
+
+    def count(self):
+
+        cards = {}
+
+        for card in self.hand:
+            if card in cards:
+                cards[card] += 1
+            else:
+                cards[card] = 1
+
+        cards = dict(sorted(cards.items(), key=lambda item: item[1], reverse=True))
+
+        return cards
 
 def test():
 
@@ -182,9 +223,14 @@ def part1(input):
 
 def part2(input):
 
-    input = test()
+    #input = test()
 
     hands = parse(input)
+    
+    for hand in hands:
+        hand.change_type()
+        hand.change_digit()
+
     ranked = rank(hands)
     
     sum = calculate(ranked)
