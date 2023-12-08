@@ -8,8 +8,8 @@ class Node:
 
         string = "Name: {} Children: [".format(self.name)
         for child in self.children:
-            string+= str(child)
-            if len(self.children) > 1 and child != self.children[-1]:
+            string+= str(child.name)
+            if len(self.children) > 1:
                 string+=", "
         string += "]"
         
