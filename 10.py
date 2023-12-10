@@ -59,6 +59,19 @@ def test02():
         ".........."
     ]
 
+    input = [
+        ".F----7F7F7F7F-7....",
+        ".|F--7||||||||FJ....",
+        ".||.FJ||||||||L7....",
+        "FJL7L7LJLJ||LJ.L-7..",
+        "L--J.L7...LJS7F-7L7.",
+        "....F-J..F7FJ|L7L7L7",
+        "....L7.F7||L7|.L7L7|",
+        ".....|FJLJ|FJ|F7|.LJ",
+        "....FJL-7.||.||||...",
+        "....L---J.LJ.LJLJ..."
+    ]
+
     return input
 
 def parse(input):
@@ -109,11 +122,18 @@ def enclosed(grid):
 
             if len(corners) > 0:
 
-                if "FJ" in corners:
+                x = 0
+
+                while "FJ" in corners[x:]:
+                    x = corners.find("FJ", x) + 1
                     pipes += 1
-                if "L7" in corners:
+
+                x = 0
+
+                while "L7" in corners[x:]:
+                    x = corners.find("L7", x) + 1
                     pipes += 1
-                
+
             if pipes % 2 != 0:
                 current.enclosed = True
 
@@ -132,66 +152,87 @@ def loop(grid, start):
     elif grid[start.y+1][start.x].id in [ "|", "L", "J"]:
         next = grid[start.y+1][start.x]
 
-    begin = None
-    end = None
-
     start.setNext(next)
     start.next.setPrevious(start)
-    
+
     start.setLoop(True)
     next.setLoop(True)
 
-    while next != start:
+    current = next
 
-        id = next.id
+    while current != start:
 
-        match id:
+        match current.id:
+
             case "-":
-                begin = grid[next.y][next.x-1]
-                end = grid[next.y][next.x+1]
+                if grid[current.y][current.x-1].loop == False:
+                    next = grid[current.y][current.x-1]
+                elif grid[current.y][current.x+1].loop == False:
+                    next = grid[current.y][current.x+1]
+                else:
+                    next = start                
             case "|":
-                begin = grid[next.y+1][next.x]
-                end = grid[next.y-1][next.x]
+                if grid[current.y+1][current.x].loop == False:
+                    next = grid[current.y+1][current.x]
+                elif grid[current.y-1][current.x].loop == False: 
+                    next = grid[current.y-1][current.x]
+                else:
+                    next = start                    
             case "7":
-                begin = grid[next.y][next.x-1]
-                end = grid[next.y+1][next.x]
+                if grid[current.y][current.x-1].loop == False:
+                    next = grid[current.y][current.x-1]
+                elif grid[current.y+1][current.x].loop == False: 
+                    next = grid[current.y+1][current.x]
+                else:
+                    next = start
             case "F":
-                begin = grid[next.y+1][next.x]
-                end = grid[next.y][next.x+1]
-            case "L":
-                begin = grid[next.y-1][next.x]
-                end = grid[next.y][next.x+1]
+                if grid[current.y][current.x+1].loop == False:
+                    next = grid[current.y][current.x+1]
+                elif grid[current.y+1][current.x].loop == False: 
+                    next = grid[current.y+1][current.x]
+                else:
+                    next = start                    
             case "J":
-                begin = grid[next.y-1][next.x]
-                end = grid[next.y][next.x-1]
+                if grid[current.y-1][current.x].loop == False:
+                    next = grid[current.y-1][current.x]
+                elif grid[current.y][current.x-1].loop == False: 
+                    next = grid[current.y][current.x-1]
+                else:
+                    next = start
+            case "L":
+                if grid[current.y-1][current.x].loop == False:
+                    next = grid[current.y-1][current.x]
+                elif grid[current.y][current.x+1].loop == False: 
+                    next = grid[current.y][current.x+1]     
+                else:
+                    next = start               
             case "S":
+                print("Helllo")
                 break
             case _:
                 print("No no no")
                 exit(-1)
 
-        previous = next
-
-        if begin.loop == True:
-            next = end
-        elif end.loop == True:
-            next = begin
-
-        previous.setNext(next)
-        next.setPrevious(previous)
+        next.setPrevious(current)
         next.setLoop(True)
+        current.setNext(next)
+
+        if (next == start):
+            break
+
+        current = next
     
 def traverse(start):
 
-    begin = start.previous
-    end = start.next
+    left = start.previous
+    right = start.next
 
     steps = 1
 
-    while begin != end:
+    while left != right:
 
-        begin = begin.previous
-        end = end.next
+        left = left.previous
+        right = right.next
 
         steps += 1
 
@@ -199,11 +240,6 @@ def traverse(start):
 
 def pipe(begin, end):
 
-    combo = begin.id + end.id
-
-    if combo in ["--", "F-"]:
-        return "-"
-    
     return "F"
 
 def part1(input):
@@ -221,9 +257,14 @@ def part2(input):
     input = test02()
 
     grid, start = parse(input)
+    print()
     points.printgrid(grid)
+    print()
+    
     loop(grid, start)
+    
     start.id = pipe(start.previous, start.next)
+    
     enclosed(grid)    
 
     sum = 0
@@ -231,7 +272,7 @@ def part2(input):
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             if grid[y][x].enclosed == True:
-                print(f"y: {y} x: {x}")
+                #print(f"y: {y} x: {x}")
                 sum += 1
 
     print("Part 2: {}".format(sum))    
