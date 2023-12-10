@@ -121,29 +121,13 @@ def enclosed(grid):
                 continue
 
             pipes = 0
-            corners = ""
 
             for i in range(x+1, len(grid[y])):
                 test = grid[y][i]
 
-                if test.id == "|" and test.loop == True:
+                if test.id in ["|", "L", "J"] and test.loop == True:
                     pipes += 1
-
-                if test.id in ["7", "F", "J", "L"] and test.loop == True:
-                    corners += test.id
-
-            if len(corners) > 0:
-
-                x = 0
-                while "FJ" in corners[x:]:
-                    x = corners.find("FJ", x) + 1
-                    pipes += 1
-
-                x = 0
-                while "L7" in corners[x:]:
-                    x = corners.find("L7", x) + 1
-                    pipes += 1
-
+                
             if pipes % 2 != 0:
                 current.enclosed = True
 
@@ -248,10 +232,114 @@ def traverse(start):
 
 def pipe(previous, next):
 
-    #hardcoded :(
-    #todo -> expand this section
+    id = None
 
-    return "J"
+    match previous.id:
+
+        case "-":
+
+            if next.y == previous.y:
+                id = "-"
+
+            elif next.y < previous.y:
+                if next.x < previous.x:
+                    id = "7"
+                elif next.x > previous.x:
+                    id = "F"
+
+            elif next.y > previous.y:
+                if next.x < previous.x:
+                    id = "J"
+                elif next.x > previous.x:
+                    id = "L"
+        case "|":
+
+            if next.x == previous.x:
+                id = "|"
+
+            elif next.x < previous.x:
+                if next.y < previous.y:
+                    id = "7"
+                elif next.y > previous.y:
+                    id = "J"
+
+            elif next.x > previous.x:
+                if next.y < previous.y:
+                    id = "F"
+                elif next.y > previous.y:
+                    id = "L"
+
+        case "7":
+            
+            if next.x == previous.x:
+                id = "|"
+            
+            if next.x < previous.x:
+                if next.y == previous.y:
+                    id = "-"
+                elif next.y < previous.y:
+                    id = "L"
+                elif next.y > previous.y:
+                    id = "F"
+            
+            if next.x > previous.x:
+                if next.y > previous.y:
+                    id = "L"
+        case "F":
+            
+            if next.x == previous.x:
+                id = "|"
+            
+            if next.x < previous.x:
+                if next.y > previous.y:
+                    id = "J"
+            
+            if next.x > previous.x:
+                if next.y == previous.y:
+                    id = "-"
+                elif next.y < previous.y:
+                    id = "J"
+                elif next.y > previous.y:
+                    id = "7"
+
+        case "J":
+            
+            if next.x == previous.x:
+                id = "|"
+            
+            if next.x < previous.x:
+                if next.y == previous.y:
+                    id == "-"
+                elif next.y < previous.y:
+                    id = "L"
+                elif next.y > previous.y:
+                    id = "F"
+            
+            if next.x > previous.x:
+                if next.y < previous.y:
+                    id = "F"
+
+        case "L":
+
+            if next.x == previous.x:
+                id = "|"
+            
+            if next.x < previous.x:
+                if next.y < previous.y:
+                    id = "7"
+            
+            if next.x > previous.x:
+                if next.y == previous.y:
+                    id = "-"
+                if next.y < previous.y:
+                    id = "J"
+                if next.y > previous.y:
+                    id = "7"
+
+        case _:
+            exit(-1)
+
+    return id
 
 def part1(input):
 
