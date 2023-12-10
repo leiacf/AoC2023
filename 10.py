@@ -72,6 +72,19 @@ def test02():
         "....L---J.LJ.LJLJ..."
     ]
 
+    input = [
+        "FF7FSF7F7F7F7F7F---7",
+        "L|LJ||||||||||||F--J",
+        "FL-7LJLJ||||||LJL-77",
+        "F--JF--7||LJLJ7F7FJ-",
+        "L---JF-JLJ.||-FJLJJ7",
+        "|F|F-JF---7F7-L7L|7|",
+        "|FFJF7L7F-JF7|JL---7",
+        "7-L-JL7||F7|L7F-7F7|",
+        "L.L7LFJ|||||FJL7||LJ",
+        "L7JLJL-JLJLJL--JLJ.L"
+    ]
+
     return input
 
 def parse(input):
@@ -110,7 +123,6 @@ def enclosed(grid):
             pipes = 0
             corners = ""
 
-            #right
             for i in range(x+1, len(grid[y])):
                 test = grid[y][i]
 
@@ -123,13 +135,11 @@ def enclosed(grid):
             if len(corners) > 0:
 
                 x = 0
-
                 while "FJ" in corners[x:]:
                     x = corners.find("FJ", x) + 1
                     pipes += 1
 
                 x = 0
-
                 while "L7" in corners[x:]:
                     x = corners.find("L7", x) + 1
                     pipes += 1
@@ -207,10 +217,8 @@ def loop(grid, start):
                 else:
                     next = start               
             case "S":
-                print("Helllo")
                 break
             case _:
-                print("No no no")
                 exit(-1)
 
         next.setPrevious(current)
@@ -238,9 +246,12 @@ def traverse(start):
 
     return steps
 
-def pipe(begin, end):
+def pipe(previous, next):
 
-    return "F"
+    #hardcoded :(
+    #todo -> expand this section
+
+    return "J"
 
 def part1(input):
 
@@ -254,15 +265,10 @@ def part1(input):
 
 def part2(input):
 
-    input = test02()
+    #input = test02()
 
     grid, start = parse(input)
-    print()
-    points.printgrid(grid)
-    print()
-    
     loop(grid, start)
-    
     start.id = pipe(start.previous, start.next)
     
     enclosed(grid)    
@@ -272,7 +278,6 @@ def part2(input):
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             if grid[y][x].enclosed == True:
-                #print(f"y: {y} x: {x}")
                 sum += 1
 
     print("Part 2: {}".format(sum))    
