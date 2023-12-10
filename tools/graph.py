@@ -11,7 +11,7 @@ def djikstra(grid, start):
 
     for y in range(0, len(grid)):
         for x in range(0, len(grid[0])):
-            if grid[y][x].space == "#":
+            if grid[y][x].id == ".":
                 grid[y][x].setVisited(True)
     
     while len(unvisited) != 0:
