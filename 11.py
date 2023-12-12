@@ -178,7 +178,7 @@ def part2(input):
 
     grid = parse(input)
     gal = galaxies(grid)
-    row, col = find(grid)
+    row, col = amounts(grid)
 
     sum = calculate(row, col, gal, 1000000)
     
