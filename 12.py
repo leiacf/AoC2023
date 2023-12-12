@@ -12,9 +12,9 @@ def test():
         ".#.###.#.###### 1,3,1,6",
         "####.#...#... 4,1,1",
         "#....######..#####. 1,6,5",
-        ".###.##....# 3,2,1",
+        ".###.##....# 3,2,1"
 
-     ]
+        ]
     
     input = [
 
@@ -25,88 +25,107 @@ def test():
         "????.######..#####. 1,6,5",
         "?###???????? 3,2,1",
 
-    ]
+    ]    
 
     return input
 
 def parse(input):
 
-    everything = {}
+    data = []
 
     for line in input:
         springs, groups = line.split()
         groups = [int(a) for a in groups.split(",")]
-        everything[springs] = groups
+        data.append([springs, groups])
 
-    return everything
+    return data
 
-def unknowns(split):
-    return "?" in split
+def is_valid(springs, groups):
 
-def divide(split):
+    lengths = []
+    splits = list(filter(None, springs.split(".")))
 
-    design = []
-    count = 1
-
-    for x in range(len(split)-1):
-
-        if split[x] == split[x + 1]:
-            count += 1
-        else:
-            design.append(count)
-            count = 1
+    for split in splits:
+        lengths.append(len(split))
     
-    design.append(count)
+    return lengths == groups
 
-    return design
+def expand(input):
 
-def arrange(springs, groups):
+    expanded = []
 
-    arrange = 0
-
-    if "?" in springs:
-
-        splits = list(filter(None, springs.split(".")))
-        arrangements = 0
-
-    return arrange
-
-
-def calculate(everything):
-
-    arr = []
-
-    for springs, groups in everything.items():
+    for line in input:
         
-        if "?" not in springs:
-            arrangements = 1
-        else:
-            arrangements = arrange(springs, groups)
+        springs, numbers = line.split(" ")
 
-        arr.append([springs, groups, arrangements])
+        one = "?".join((springs,) * 5)
+        two = ",".join((numbers,) * 5 )
 
-    return arr
+        expanded.append(one+ " " + two)
+        
+    return expanded
+
+def recursive(springs, groups):
+
+    if "?" not in springs:
+        if is_valid(springs, groups):
+            return 1
+        
+    else:
+
+        for x, letter in enumerate(springs):
+        
+            if letter == "?":
+
+                first = springs[:x] + "." + springs[x+1:]
+                second = springs[:x] + "#" + springs[x+1:]
+
+                one = recursive(first, groups)
+                two = recursive(second, groups)
+
+                return one+two
+
+    return 0
+    
+def calculate(data):
+
+    arrangements = []
+
+    for springs, groups in data:
+        total = recursive(springs, groups)
+        arrangements.append([springs, groups, total])
+
+    return arrangements
 
 def part1(input):
 
-    input = test()
+    #input = test()
 
-    everything = parse(input)
-    arr = calculate(everything)
+    data = parse(input)
+    arr = calculate(data)
 
     sum = 0
 
     for x in range(len(arr)):
         sum += arr[x][2]
 
-
     print("Part 1: {}".format(sum))
 
 def part2(input):
 
-    #input = test()
+    input = test()
+    expanded = expand(input)
 
-    print("Part 2: {}".format(1))    
+    data = parse(expanded)
+    arr = calculate(data)
+
+    sum = 0
+
+    for x in range(len(arr)):
+        sum += arr[x][2]
+        print(x)
+
+    print("Part 2: {}".format(sum))    
 
 filename = "input/12.txt"
 input = files.input_as_list(filename)
@@ -118,7 +137,7 @@ part1(input)
 end1 = time.perf_counter()
 
 start2 = time.perf_counter()
-part2(input)
+#part2(input)
 end2 = time.perf_counter()
 
 print()
