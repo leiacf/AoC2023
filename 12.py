@@ -1,4 +1,7 @@
 #Advent of Code 2023 Day 12
+#Finally solved part 2, but by looking at what others have done
+#Trying hard to learn, NOT to just blindly copy code
+#Learned: Dynamic programming, what types of problems it can be used on, memoization
 
 from tools import files
 import time
@@ -40,16 +43,6 @@ def parse(input):
 
     return data
 
-def is_valid(springs, groups):
-
-    lengths = []
-    splits = list(filter(None, springs.split(".")))
-
-    for split in splits:
-        lengths.append(len(split))
-    
-    return lengths == groups
-
 def expand(input):
 
     expanded = []
@@ -65,67 +58,84 @@ def expand(input):
         
     return expanded
 
-def recursive(springs, groups):
+dp = {}
+def dynamic(springs, groups, index, groupindex, hashes):
+   
+    state = (index, groupindex, hashes)
 
-    if "?" not in springs:
-        if is_valid(springs, groups):
+    if state in dp:
+        return dp[state]
+
+    # exit conditions (end of the line)
+    if index == len(springs):
+
+        # At the end of the line, no more groups and no hashes
+        # Nothing left to check - So there's exactly 1 valid combination
+        if groupindex == len(groups) and hashes == 0:
             return 1
+        # At the end of a line, and still in the last group with hashes checked
+        # If everything matches, there's exactly 1 valid combination
+        elif groupindex == len(groups)-1 and groups[groupindex] == hashes:
+            return 1
+        # At the end of a line, but something isn't right
+        # Has to be invalid, so returning 0
+        else:
+            return 0
+
+    total = 0
+
+    # For every index, do the following checks for both .'s and #'s
+    for character in ".#":
         
-    else:
+        # Treating question marks as the same character that is currently checked (thus ensuring all combinations are looked at)
+        if springs[index] == character or springs[index] == "?":
 
-        for x, letter in enumerate(springs):
-        
-            if letter == "?":
+            # Recursive combinations that affect the total score
+            if character == "." and hashes==0:
+                # Not in a run at all! 
+                # Moving to the next index, keeping the group index stable because it wasn't matched yet, still have no hashes
+                total += dynamic(springs, groups, index+1, groupindex, 0)
 
-                first = springs[:x] + "." + springs[x+1:]
-                second = springs[:x] + "#" + springs[x+1:]
+            elif character == "." and hashes > 0 and groupindex < len(groups) and groups[groupindex] == hashes:
+                # Just finished a run, it matches what was expected! 
+                # Moving to the next index, moving to the next run, resetting hashcount
+                total += dynamic(springs, groups, index+1, groupindex+1, 0)
 
-                one = recursive(first, groups)
-                two = recursive(second, groups)
+            elif character == "#":
+                # In the middle of an unfinished run!
+                #  Moving to the next index, keeping the group index stable because it wasn't matched yet, counting another hash
+                total += dynamic(springs, groups, index+1, groupindex, hashes+1)
 
-                return one+two
+    dp[state] = total 
 
-    return 0
-    
-def calculate(data):
-
-    arrangements = []
-
-    for springs, groups in data:
-        total = recursive(springs, groups)
-        arrangements.append([springs, groups, total])
-
-    return arrangements
+    return total
 
 def part1(input):
 
     #input = test()
-
     data = parse(input)
-    arr = calculate(data)
+    
+    total = 0
 
-    sum = 0
+    for springs, groups in data:
+        dp.clear()
+        total += dynamic(springs, groups, 0, 0, 0)
 
-    for x in range(len(arr)):
-        sum += arr[x][2]
-
-    print("Part 1: {}".format(sum))
+    print(f"Part 1: {total}")
 
 def part2(input):
 
-    input = test()
+    #input = test()
     expanded = expand(input)
-
     data = parse(expanded)
-    arr = calculate(data)
 
-    sum = 0
+    total = 0
 
-    for x in range(len(arr)):
-        sum += arr[x][2]
-        print(x)
-
-    print("Part 2: {}".format(sum))    
+    for springs, groups in data:
+        dp.clear()
+        total += dynamic(springs, groups, 0, 0, 0)
+    
+    print(f"Part 2: {total}")    
 
 filename = "input/12.txt"
 input = files.input_as_list(filename)
@@ -137,7 +147,7 @@ part1(input)
 end1 = time.perf_counter()
 
 start2 = time.perf_counter()
-#part2(input)
+part2(input)
 end2 = time.perf_counter()
 
 print()
