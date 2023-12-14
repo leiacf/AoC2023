@@ -1,7 +1,6 @@
 #Advent of Code 2023 Day 13
 
 from tools import files
-from tools import points
 import time
 
 def test():
@@ -55,37 +54,6 @@ def convert(grid):
 
     return converted
 
-def mirror(grid):
-
-    above = 0
-
-    for y in range(len(grid)):
-
-        found = False
-        down = y-1
-
-        for up in range(y, len(grid)):
-
-            if down == -1:
-                break
-
-            one = grid[down]
-            two = grid[up]
-
-            if one == two:
-                down -= 1
-                found = True
-                continue
-            else:
-                found = False
-                break
-
-        if found == True:
-            above = y
-            return above
-
-    return above
-
 def mirror_persist(grid, last):
 
     above = 0
@@ -121,46 +89,24 @@ def mirror_persist(grid, last):
 
     return above
 
-def check(grid):
+def check_persist(grid, a, l):
 
     above = 0
     left = 0
 
     # horizontal
-    above = mirror(grid)
+    above = mirror_persist(grid, a)
 
     # vertical
     if above == 0:
         hor = convert(grid)
-        left = mirror(hor)
+        left = mirror_persist(hor, l)
 
     return above, left
 
-def check_persist(grid, last):
-
-    above = 0
-    left = 0
-
-    # horizontal
-    above = mirror_persist(grid, last)
-
-    # vertical
-    if above == 0:
-        hor = convert(grid)
-        left = mirror_persist(hor, last)
-
-    return above, left
-
-def calculate(grid):
+def calculate_persists(grid, above, left):
     
-    above, left = check(grid)
-    total = left + (above*100)
-
-    return total
-
-def calculate_persists(grid, last):
-    
-    above, left = check_persist(grid, last)
+    above, left = check_persist(grid, above, left)
     total = left + (above*100)
 
     return total
@@ -170,7 +116,7 @@ def reflect(grids):
     total = 0
     
     for grid in grids:
-        total += calculate(grid)
+        total += calculate_persists(grid, 0, 0)
 
     return total
 
@@ -204,32 +150,20 @@ def smudge(grids):
         for y in range(len(grid)):
             for x in range(len(grid[0])):
 
-                last = max(check(grid))
+                above, left = check_persist(grid, 0, 0)
 
                 new = change(grid, x, y)
 
-                if check(grid) != check_persist(new, last):
-                    if ((0, 0) != check_persist(new, last)):
+                if check_persist(grid, 0, 0) != check_persist(new, above, left):
+                    if ((0, 0) != check_persist(new, above, left)):
 
                         matches += 1
-                        total += calculate_persists(new, last)
+                        total += calculate_persists(new, above, left)
                         found = True
                         break
 
             if found:
                 break
-
-        if not found:
-            points.printgrid(grid)
-
-    print(f"Found {matches} matches for {len(grids)} grids")
-
-    print()
-
-    print("Off by one grid error. Probably because the persist functions doesn't take above and left into account, need to persist both")
-    print("Manually solved for now (counting the rows to the the smudge for the missing grid and calculating by hand)")
-
-    print()
 
     return total
 
