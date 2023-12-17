@@ -13,6 +13,8 @@ class Point:
         self.next = None
         self.previous = None
         self.enclosed = False
+        self.dir = ">"
+        self.moves = 0
 
     def __str__(self):
         return self.id
@@ -34,6 +36,12 @@ class Point:
 
     def setEnclosed(self, bool):
         self.enclosed = bool
+
+    def setDirection(self, direction):
+        self.direction = direction
+
+    def setMoves(self, moves):
+        self.moves = moves
 
 def calculate_manhattan(p, q):
     return ( abs(p[0]-q[0]) + abs(p[1]-q[1]) )
