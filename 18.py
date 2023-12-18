@@ -2,7 +2,6 @@
 
 from tools import files
 from tools import points
-import math
 import time
 
 def test():
