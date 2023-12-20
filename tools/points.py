@@ -13,8 +13,6 @@ class Point:
         self.next = None
         self.previous = None
         self.enclosed = False
-        self.dir = ">"
-        self.moves = 0
 
     def __str__(self):
         return self.id
@@ -37,83 +35,8 @@ class Point:
     def setEnclosed(self, bool):
         self.enclosed = bool
 
-    def setDirection(self, direction):
-        self.direction = direction
-
-    def setMoves(self, moves):
-        self.moves = moves
-
 def calculate_manhattan(p, q):
     return ( abs(p[0]-q[0]) + abs(p[1]-q[1]) )
-
-def neighbours8(x, y, maxX=None, maxY=None):
-
-    neighbours = [
-        (x-1, y-1), (x, y-1), (x+1, y-1),
-        (x-1, y), (x+1, y),
-        (x-1, y+1), (x, y+1), (x+1, y+1)
-        ]
-
-    if maxX != None and maxY != None:
-
-        neighbours = []
-
-        if x in range(0, maxX) and y in range(0, maxY):
-
-            if y > 0:
-                if x > 0:
-                    neighbours.append((x-1, y-1))
-                else:
-                    pass
-                neighbours.append((x, y-1))
-                if x < maxX-1:
-                    neighbours.append((x+1, y-1))
-                else:
-                    pass
-
-            if x > 0:
-                neighbours.append((x-1, y))
-            else:
-                pass
-            if x < maxX-1:
-                neighbours.append((x+1, y))
-            else:
-                pass
-
-            if y < maxY-1:
-
-                if x > 0:
-                    neighbours.append((x-1, y+1))
-                else:
-                    pass
-                neighbours.append((x, y+1))
-                if x < maxX-1:
-                    neighbours.append((x+1, y+1))
-                else:
-                    pass
-        
-    return neighbours
-
-def neighbours4(x, y, maxX=None, maxY=None):
-
-    neighbours = [ (x, y-1), (x+1, y), (x, y+1), (x-1, y) ]
-
-    if maxX != None and maxY != None:
-
-        neighbours = []
-
-        if x in range(0, maxX) and y in range(0, maxY):
-
-            if y > 0 and y < maxY-1:
-                neighbours.append((x, y-1))
-            if x < maxX-1:
-                neighbours.append((x+1, y))
-            if y < maxY-1:
-                neighbours.append((x, y+1))
-            if x > 0:
-                neighbours.append((x-1, y))
-
-    return neighbours
 
 def grid(width, height):
         
